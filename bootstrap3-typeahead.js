@@ -289,27 +289,49 @@
     },
 
     next: function (event) {
-      var active = this.$menu.find('.active').removeClass('active')
-        , next = active.next();
+      var active = this.$menu.find('.active').removeClass('active');
+      var next = active.next();
 
       if (!next.length) {
         next = $(this.$menu.find('li')[0]);
       }
 
       next.addClass('active');
+
+      this.ensureVisibility(next);
+
     },
 
     prev: function (event) {
-      var active = this.$menu.find('.active').removeClass('active')
-        , prev = active.prev();
+      var active = this.$menu.find('.active').removeClass('active');
+      var prev = active.prev();
 
       if (!prev.length) {
         prev = this.$menu.find('li').last();
       }
 
       prev.addClass('active');
+      this.ensureVisibility(prev);
+
     },
 
+    ensureVisibility: function (activeElement) {
+        var popUpEl = this.$menu;
+        var popupHeight = popUpEl.prop('offsetHeight') -
+                parseInt(popUpEl.css('marginTop'), 10) - 
+                parseInt(popUpEl.css('marginBottom'), 10),
+            popupScrollTop = popUpEl.prop('scrollTop'),
+            elementTop = activeElement.prop('offsetTop'),
+            elementBottom = elementTop + activeElement.prop('offsetHeight');
+        
+        if (elementTop < popupScrollTop) {
+                $(popUpEl).scrollTop(elementTop);
+            }
+        else if (popupHeight < (elementBottom - popupScrollTop)) {
+                $(popUpEl).scrollTop(elementBottom - popupHeight);
+            }
+    },
+    
     listen: function () {
       this.$element
         .on('focus',    $.proxy(this.focus, this))
